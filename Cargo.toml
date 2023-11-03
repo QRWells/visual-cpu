@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+members = [
+    "cpu",
+    "x86-64",
+    "visualizer"
+]
+package.license = "MIT"
