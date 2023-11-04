@@ -7,6 +7,8 @@ pub struct Registers {
     gr: [u64; 16],
     rip: u64,
     rflags: Flags,
+    cr0: CR0,
+    cr3: CR3,
     simd: [AVX512Register; 16],
 }
 
@@ -34,6 +36,32 @@ bitflags! {
         const AES = 1 << 30;
         const ALTERNATEINSTRUCTIONSET = 1 << 31;
     }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub struct CR0: u64 {
+        const PROTECTIONENABLE = 1 << 0;
+        const MONITORCO_PROCESSOR = 1 << 1;
+        const EMULATION = 1 << 2;
+        const TASKSWITCHED = 1 << 3;
+        const EXTENSIONTYPE = 1 << 4;
+        const NUMERICERROR = 1 << 5;
+        const WRITEPROTECT = 1 << 16;
+        const ALIGNMENTMASK = 1 << 18;
+        const NOTWRITE_THROUGH = 1 << 29;
+        const CACHE_DISABLE = 1 << 30;
+        const PAGING = 1 << 31;
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub struct CR3: u64 {
+        const PAGELEVELWRITE_THROUGH = 1 << 3;
+        const PAGELEVELCACHE_DISABLE = 1 << 4;
+        const PAGELEVELPROTECTIONENABLE = 1 << 5;
+        const PAGELEVELEXTENSIONTYPE = 1 << 8;
+        const PAGELEVELGLOBAL = 1 << 9;
+
+        const _ = !0;
+    }
 }
 
 impl Registers {
@@ -42,6 +70,8 @@ impl Registers {
             gr: [0; 16],
             rip: 0,
             rflags: Flags::empty(),
+            cr0: CR0::empty(),
+            cr3: CR3::empty(),
             simd: [AVX512Register::new(); 16],
         }
     }
