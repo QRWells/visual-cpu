@@ -1,14 +1,32 @@
 #[derive(Debug, Clone, Copy)]
 pub enum Dest {
     Reg(u8),
-    Mem(u64),
+    Mem(Addressing),
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum Src {
     Reg(u8),
-    Mem(u64),
+    Mem(Addressing),
     Imm(u64),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Addressing {
+    Displacement(u64),
+    Base(u8),
+    /// Base + Index
+    BaseIndex(u8, u8),
+    /// Base + Displacement
+    BaseDisplacement(u8, u64),
+    /// Base + Index + Displacement
+    BaseIndexDisplacement(u8, u8, u64),
+    /// Base + Index * Scale
+    BaseIndexScale(u8, u8, u8),
+    /// Index * Scale + Displacement
+    IndexScaleDisplacement(u8, u8, u64),
+    /// Base + Index * Scale + Displacement
+    BaseIndexScaleDisplacement(u8, u8, u8, u64),
 }
 
 #[derive(Debug, Clone, Copy)]
