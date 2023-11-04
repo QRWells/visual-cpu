@@ -8,6 +8,7 @@ pub mod simd;
 
 pub struct Cpu {
     mmu: MMU,
+    registers: register::Registers,
     device: Vec<Box<dyn cpu::Device>>,
 }
 
@@ -32,6 +33,7 @@ impl cpu::Cpu for Cpu {
         CpuFeatures {
             simd: true,
             paging: self.mmu.paging_mode() != PagingMode::Real,
+            unaligned_memory_access: true,
         }
     }
 }

@@ -187,6 +187,38 @@ impl Registers {
             r15b 15
         }
     }
+
+    pub fn ah(&self) -> u8 {
+        (self.gr[0] >> 8) as u8
+    }
+
+    pub fn ch(&self) -> u8 {
+        (self.gr[1] >> 8) as u8
+    }
+
+    pub fn dh(&self) -> u8 {
+        (self.gr[2] >> 8) as u8
+    }
+
+    pub fn bh(&self) -> u8 {
+        (self.gr[3] >> 8) as u8
+    }
+
+    pub fn write_ah(&mut self, value: u8) {
+        self.gr[0] = (self.gr[0] & 0xff) | ((value as u64) << 8);
+    }
+
+    pub fn write_ch(&mut self, value: u8) {
+        self.gr[1] = (self.gr[1] & 0xff) | ((value as u64) << 8);
+    }
+
+    pub fn write_dh(&mut self, value: u8) {
+        self.gr[2] = (self.gr[2] & 0xff) | ((value as u64) << 8);
+    }
+
+    pub fn write_bh(&mut self, value: u8) {
+        self.gr[3] = (self.gr[3] & 0xff) | ((value as u64) << 8);
+    }
 }
 
 #[cfg(test)]
