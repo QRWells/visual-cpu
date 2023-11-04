@@ -1,3 +1,6 @@
+use thiserror::Error;
+
+pub mod device;
 pub mod simd;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -9,6 +12,7 @@ pub enum Endianness {
 pub struct CpuFeatures {
     pub simd: bool,
     pub paging: bool,
+    pub unaligned_memory_access: bool,
 }
 
 pub trait Cpu {
@@ -41,12 +45,45 @@ pub trait Device: Addressable {
 
 pub trait Addressable {
     /// Reads a byte from the addressable memory
-    fn read_byte(&self, address: usize) -> u8;
+    fn read_byte(&self, address: usize) -> Result<u8, MemoryAccessError>;
     /// Reads a slice of bytes from the addressable memory
-    fn read_bytes(&self, address: usize, size: usize) -> &[u8];
+    fn read_bytes(&self, address: usize, size: usize) -> Result<&[u8], MemoryAccessError>;
 
     /// Writes a byte to the addressable memory
-    fn write_byte(&mut self, address: usize, value: u8);
+    fn write_byte(&mut self, address: usize, value: u8) -> Result<(), MemoryAccessError>;
     /// Writes a slice of bytes to the addressable memory
-    fn write_bytes(&mut self, address: usize, value: &[u8]);
+    fn write_bytes(&mut self, address: usize, value: &[u8]) -> Result<(), MemoryAccessError>;
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AccessType {
+    Read,
+    Write,
+    Execute,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PrivilegeLevel {
+    Machine,
+    Supervisor,
+    User,
+}
+
+#[derive(Debug, Error)]
+pub enum MemoryAccessError {
+    /// The address is out of bounds
+    #[error("Illegal memory access at address {address:#x} with size {size}")]
+    OutOfBounds { address: usize, size: usize },
+
+    /// The address is not aligned
+    #[error("The address {address:#x} is not aligned")]
+    Unaligned { address: usize },
+
+    /// The address is not mapped
+    #[error("The address is not mapped")]
+    AddressNotMapped,
+
+    /// The address is already mapped
+    #[error("The address {address:#x} is already mapped")]
+    AddressAlreadyMapped { address: usize },
 }
